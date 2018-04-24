@@ -1,0 +1,11 @@
+---
+pipeline:
+  publish-rke-certs-deployer:
+    image: plugins/docker
+    dockerfile: package/Dockerfile
+    repo: rancher/hyperkube
+    context: package/
+    tag: ${DRONE_TAG}
+    secrets: [docker_username, docker_password]
+    when:
+      event: tag
