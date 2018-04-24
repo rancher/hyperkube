@@ -1,4 +1,4 @@
-FROM gcr.io/google_containers/hyperkube:v1.9.7
+FROM gcr.io/google_containers/hyperkube:v1.9.5
 RUN clean-install apt-transport-https \
     && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main" > \
     /etc/apt/sources.list.d/azure-cli.list \
