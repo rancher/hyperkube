@@ -7,3 +7,4 @@ RUN clean-install apt-transport-https \
     xfsprogs \
     open-iscsi \
     azure-cli \
+    curl \
