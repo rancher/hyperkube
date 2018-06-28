@@ -1,4 +1,4 @@
-FROM gcr.io/google_containers/hyperkube:v1.10.3
+FROM gcr.io/google_containers/hyperkube:v1.11.0
 RUN clean-install apt-transport-https gnupg1 curl \
     && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ stretch main" > \
     /etc/apt/sources.list.d/azure-cli.list \
