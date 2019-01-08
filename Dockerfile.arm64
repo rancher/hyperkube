@@ -1,0 +1,6 @@
+FROM gcr.io/google_containers/hyperkube-arm64:v1.13.1
+RUN clean-install apt-transport-https gnupg1 curl \
+    && apt-get purge gnupg \
+    && clean-install \
+    xfsprogs \
+    open-iscsi
