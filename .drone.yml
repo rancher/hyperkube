@@ -17,6 +17,32 @@ steps:
       repo: rancher/hyperkube
       tag: "${DRONE_TAG}-amd64"
     when:
+      instance:
+        - drone-publish.rancher.io
+      event:
+        - tag
+---
+kind: pipeline
+name: arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+  - name: publish-hyperkube-arm64
+    image: plugins/docker:linux-arm64 
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      dockerfile: Dockerfile.arm64
+      repo: rancher/hyperkube
+      tag: "${DRONE_TAG}-arm64"
+    when:
+      instance:
+        - drone-publish.rancher.io
       event:
         - tag
 ---
@@ -35,8 +61,12 @@ steps:
       template: "rancher/hyperkube:${DRONE_TAG}-ARCH"
       platforms:
         - linux/amd64
+        - linux/arm64
     when:
+      instance:
+        - drone-publish.rancher.io
       event:
         - tag
 depends_on:
 - amd64
+- arm64
