@@ -47,6 +47,41 @@ steps:
         - tag
 ---
 kind: pipeline
+name: windows-1809
+
+platform:
+  os: windows
+  arch: amd64
+  version: 1809
+
+steps:
+  - name: publish-hyperkube-windows-1809
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      dockerfile: Dockerfile.windows
+      repo: rancher/hyperkube
+      tag: "${DRONE_TAG}-windows-1809"
+      build_args:
+        - SERVERCORE_VERSION=1809
+    volumes:
+      - name: docker_pipe
+        path: \\\\.\\pipe\\docker_engine
+    when:
+      instance:
+        - drone-publish.rancher.io
+      event:
+        - tag
+
+volumes:
+  - name: docker_pipe
+    host:
+      path: \\\\.\\pipe\\docker_engine
+---
+kind: pipeline
 name: manifest
 
 steps:
@@ -57,11 +92,8 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      target: "rancher/hyperkube:${DRONE_TAG}"
-      template: "rancher/hyperkube:${DRONE_TAG}-OS-ARCH"
-      platforms:
-        - linux/amd64
-        - linux/arm64
+      spec: manifest.tmpl
+      ignore_missing: true
     when:
       instance:
         - drone-publish.rancher.io
@@ -70,3 +102,4 @@ steps:
 depends_on:
 - linux-amd64
 - linux-arm64
+- windows-1809
