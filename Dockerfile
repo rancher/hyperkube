@@ -1,4 +1,4 @@
-FROM gcr.io/google_containers/hyperkube:v1.13.5
+FROM gcr.io/google_containers/hyperkube:v1.13.7
 RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     clean-install apt-transport-https gnupg1 curl zfsutils-linux \
     && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ stretch main" > \
