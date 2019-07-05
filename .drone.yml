@@ -82,6 +82,41 @@ volumes:
       path: \\\\.\\pipe\\docker_engine
 ---
 kind: pipeline
+name: windows-1903
+
+platform:
+  os: windows
+  arch: amd64
+  version: 1903
+
+steps:
+  - name: publish-hyperkube-windows-1903
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      dockerfile: Dockerfile.windows
+      repo: rancher/hyperkube
+      tag: "${DRONE_TAG}-windows-1903"
+      build_args:
+        - SERVERCORE_VERSION=1903
+    volumes:
+      - name: docker_pipe
+        path: \\\\.\\pipe\\docker_engine
+    when:
+      instance:
+        - drone-publish.rancher.io
+      event:
+        - tag
+
+volumes:
+  - name: docker_pipe
+    host:
+      path: \\\\.\\pipe\\docker_engine
+---
+kind: pipeline
 name: manifest
 
 steps:
@@ -103,3 +138,5 @@ depends_on:
 - linux-amd64
 - linux-arm64
 - windows-1809
+- windows-1903
+
