@@ -1,6 +1,6 @@
 ARG SERVERCORE_VERSION
 
-FROM mcr.microsoft.com/windows/servercore:${SERVERCORE_VERSION} as download
+FROM mcr.microsoft.com/windows/servercore:${SERVERCORE_VERSION} as builder
 SHELL ["powershell", "-NoLogo", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 RUN if (-not (Get-Command Expand-7Zip -ErrorAction Ignore)) { \
        Install-PackageProvider -Name NuGet -Force -Verbose; \
@@ -38,19 +38,18 @@ RUN $URL = ('https://dl.k8s.io/{0}/kubernetes-node-windows-amd64.tar.gz' -f $env
     }; \
     \
     Write-Host ('Downloading Kubernetes from {0} ...' -f $URL); \
-    \
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
     Invoke-WebRequest -UseBasicParsing -OutFile c:\kubernetes.tar.gz -Uri $URL; \
     \
     Write-Host 'Expanding ...'; \
-    \
     Expand-GZip c:\kubernetes.tar.gz c:\kubernetes.tar; \
     Expand-7Zip c:\kubernetes.tar c:\; \
     \
-    Write-Host 'Complete.';
+    Write-Host 'Complete.'
 
 FROM mcr.microsoft.com/powershell:nanoserver-${SERVERCORE_VERSION}
-COPY ["windows/*", "c:/Program Files/runtime/"]
-COPY --from=download ["/kubernetes/node/bin/kubelet.exe", "/kubernetes/node/bin/kubectl.exe", "/kubernetes/node/bin/kube-proxy.exe", "c:/Program Files/kubernetes/bin/"]
-WORKDIR "c:\\Program Files\\runtime"
-CMD  ["pwsh", "-f", "copy.ps1"]
+USER ContainerAdministrator
+COPY --from=builder /Windows/System32/netapi32.dll /Windows/System32/
+COPY --from=builder /kubernetes/node/bin/kubectl.exe /Windows
+COPY --from=builder /kubernetes/node/bin/kubelet.exe /kubernetes/node/bin/kube-proxy.exe /etc/kubernetes/bin/
+COPY windows/entrypoint.ps1 /usr/bin/
