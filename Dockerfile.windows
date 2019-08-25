@@ -49,6 +49,18 @@ RUN $URL = ('https://dl.k8s.io/{0}/kubernetes-node-windows-amd64.tar.gz' -f $env
 
 FROM mcr.microsoft.com/powershell:nanoserver-${SERVERCORE_VERSION}
 USER ContainerAdministrator
+SHELL ["pwsh.exe", "-NoLogo", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+RUN $URL = 'https://github.com/thxCode/rancher-azure-cli/releases/download/v2.0.69/azure-cli.zip'; \
+    \
+    Write-Host ('Downloading azure-cli from {0} ...'  -f $URL); \
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+    Invoke-WebRequest -UseBasicParsing -OutFile c:\azure-cli.zip -Uri $URL; \
+    \
+    Write-Host 'Expanding ...'; \
+    Expand-Archive -Force -Path c:\azure-cli.zip -DestinationPath c:\azure-cli; \
+    Remove-Item -Force -Path c:\azure-cli.zip; \
+    \
+    Write-Host 'Complete.'
 COPY --from=builder /Windows/System32/netapi32.dll /Windows/System32/
 COPY --from=builder /kubernetes/node/bin/kubectl.exe /Windows
 COPY --from=builder /kubernetes/node/bin/kubelet.exe /kubernetes/node/bin/kube-proxy.exe /etc/kubernetes/bin/
