@@ -50,7 +50,7 @@ RUN $URL = ('https://dl.k8s.io/{0}/kubernetes-node-windows-amd64.tar.gz' -f $env
 FROM mcr.microsoft.com/powershell:nanoserver-${SERVERCORE_VERSION}
 USER ContainerAdministrator
 SHELL ["pwsh.exe", "-NoLogo", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-RUN $URL = 'https://github.com/thxCode/rancher-azure-cli/releases/download/v2.0.69/azure-cli.zip'; \
+RUN $URL = 'https://github.com/rancher/azure-cli/releases/download/v0.0.2/dist.azure-cli.zip'; \
     \
     Write-Host ('Downloading azure-cli from {0} ...'  -f $URL); \
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
