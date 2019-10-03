@@ -1,5 +1,6 @@
 FROM gcr.io/google_containers/hyperkube-arm64:v1.16.1
 RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
+    apt-get update && apt-get upgrade -y && apt-get clean && \
     clean-install apt-transport-https gnupg1 curl zfsutils-linux \
     && apt-get purge gnupg \
     && clean-install \
