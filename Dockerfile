@@ -9,4 +9,8 @@ RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     && clean-install \
     xfsprogs \
     open-iscsi \
-    azure-cli \
+    azure-cli
+
+RUN echo "deb http://deb.debian.org/debian stretch-backports main" >> \
+    /etc/apt/sources.list.d/backports.list \
+    && clean-install -t stretch-backports glusterfs-client glusterfs-common
