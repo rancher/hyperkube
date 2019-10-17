@@ -1,4 +1,7 @@
 FROM gcr.io/google_containers/hyperkube:v1.13.12
+
+RUN clean-install --allow-change-held-packages apt libapt-pkg5.0
+
 RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     apt-get update && apt-get upgrade -y && apt-get clean && \
     clean-install apt-transport-https gnupg1 curl zfsutils-linux \
