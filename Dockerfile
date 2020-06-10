@@ -12,5 +12,9 @@ RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     azure-cli
 
 RUN echo "deb http://deb.debian.org/debian stretch-backports main" >> \
-    /etc/apt/sources.list.d/backports.list \
-    && clean-install -t stretch-backports glusterfs-client glusterfs-common
+        /etc/apt/sources.list.d/backports.list && apt-get update
+RUN apt-get install -y python3 python3-prettytable python3-requests
+RUN curl https://download.gluster.org/pub/gluster/glusterfs/6/6.9/Debian/9/amd64/apt/pool/main/g/glusterfs/glusterfs-common_6.9-1_amd64.deb > glusterfs-common.deb
+RUN curl https://download.gluster.org/pub/gluster/glusterfs/6/6.9/Debian/9/amd64/apt/pool/main/g/glusterfs/glusterfs-client_6.9-1_amd64.deb > glusterfs-client.deb
+RUN dpkg -i glusterfs-common.deb
+RUN dpkg -i glusterfs-client.deb
