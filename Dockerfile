@@ -1,4 +1,4 @@
-FROM gcr.io/google_containers/hyperkube:v1.16.10
+FROM gcr.io/google_containers/hyperkube:v1.16.11
 RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     apt-get update && apt-get upgrade -y && apt-get clean && \
     clean-install apt-transport-https gnupg1 curl zfsutils-linux \
