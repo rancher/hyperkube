@@ -1,4 +1,4 @@
-FROM gcr.io/google_containers/hyperkube:v1.17.7
+FROM gcr.io/google_containers/hyperkube:v1.17.8
 RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     apt-get update && apt-get upgrade -y && apt-get clean && \
     clean-install apt-transport-https gnupg1 curl zfsutils-linux \
@@ -17,8 +17,3 @@ RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     glusterfs-common \
     samba-common \
     arptables
-
-RUN update-alternatives --set iptables /usr/sbin/iptables-legacy && \
-    update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy && \
-    update-alternatives --set arptables /usr/sbin/arptables-legacy && \
-    update-alternatives --set ebtables /usr/sbin/ebtables-legacy
