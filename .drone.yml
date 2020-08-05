@@ -6,6 +6,17 @@ platform:
   arch: amd64
 
 steps:
+  - name: prepare-amd64-binaries
+    image: ubuntu:20.04
+    commands:
+    - apt-get -y update && apt-get -y install make curl tar
+    - make k8s-binaries
+    when:
+      instance:
+        - drone-publish.rancher.io
+      event:
+        - tag
+
   - name: publish-hyperkube-linux-amd64
     image: plugins/docker
     settings:
@@ -30,6 +41,17 @@ platform:
   arch: arm64
 
 steps:
+  - name: prepare-arm64-binaries
+    image: ubuntu:20.04
+    commands:
+    - apt-get -y update && apt-get -y install make curl tar
+    - make ARCH=arm64 k8s-binaries
+    when:
+      instance:
+        - drone-publish.rancher.io
+      event:
+        - tag
+
   - name: publish-hyperkube-linux-arm64
     image: plugins/docker
     settings:
@@ -37,7 +59,7 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      dockerfile: Dockerfile.arm64
+      dockerfile: Dockerfile
       repo: rancher/hyperkube
       tag: "${DRONE_TAG}-linux-arm64"
     when:
