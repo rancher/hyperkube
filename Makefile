@@ -1,11 +1,10 @@
 K8S_VERSION?=v1.19.0-rc.4
-BASEIMAGE?=docker.io/rancher/hyperkube-base:v0.0.1-rc3
 
 ARCH?=amd64
 ALL_ARCH=amd64 arm64
 
 IMAGE?=docker.io/rancher/hyperkube
-TAG?=v1.19.0-rc.4-rancher1
+TAGEND?=rancher1
 
 K8S_STAGING:=$(shell mktemp -d)
 
@@ -42,8 +41,8 @@ k8s-binaries: k8s-tars/${K8S_VERSION}/${ARCH}/$(K8S_SERVER_TARBALL)
 	cp ${K8S_STAGING}/k8s-server-untarred/kubernetes/server/bin/kubectl ${K8S_STAGING}/k8s-binaries
 	cp ${K8S_STAGING}/k8s-server-untarred/kubernetes/server/bin/kubelet ${K8S_STAGING}/k8s-binaries
 	
-	mkdir -p k8s-binaries/${K8S_VERSION}/${ARCH}
-	cp -r ${K8S_STAGING}/k8s-binaries k8s-binaries/${K8S_VERSION}/${ARCH}
+	mkdir -p k8s-binaries
+	cp -r ${K8S_STAGING}/k8s-binaries/* k8s-binaries/
 	rm -rf ${K8S_STAGING}
 
 clean:
@@ -51,10 +50,10 @@ clean:
 	rm -rf k8s-binaries
 
 build: k8s-binaries
-	docker build --pull -t $(IMAGE):$(TAG)-$(ARCH) -f Dockerfile .
+	docker build --pull -t ${IMAGE}:${K8S_VERSION}-${TAGEND}-${ARCH} -f Dockerfile .
 
 push: build
-	docker push $(IMAGE):$(TAG)-$(ARCH)
+	docker push ${IMAGE}:${K8S_VERSION}-${TAGEND}-${ARCH} 
 
 .PHONY: all build push clean all-build all-push-images all-push push-manifest k8s-binaries
 
