@@ -1,4 +1,4 @@
-K8S_VERSION?=v1.19.0-rc.4
+K8S_VERSION?=v1.19.0
 
 ARCH?=amd64
 ALL_ARCH=amd64 arm64
