@@ -152,6 +152,47 @@ volumes:
       path: \\\\.\\pipe\\docker_engine
 ---
 kind: pipeline
+name: windows-2004
+
+platform:
+  os: windows
+  arch: amd64
+  version: 2004
+
+# remove this and use upstream images when https://github.com/drone/drone-git/pull/25 is merged
+clone:
+  disable: true
+
+steps:
+  - name: clone
+    image: luthermonson/drone-git:windows-2004-amd64
+  - name: luthermonson/drone-docker:2004
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      dockerfile: Dockerfile.windows
+      repo: rancher/hyperkube
+      tag: "${DRONE_TAG}-windows-2004"
+      build_args:
+        - SERVERCORE_VERSION=2004
+    volumes:
+      - name: docker_pipe
+        path: \\\\.\\pipe\\docker_engine
+    when:
+      instance:
+        - drone-publish.rancher.io
+      event:
+        - tag
+
+volumes:
+  - name: docker_pipe
+    host:
+      path: \\\\.\\pipe\\docker_engine
+---
+kind: pipeline
 name: manifest
 
 steps:
@@ -174,3 +215,4 @@ depends_on:
 - windows-1809
 - windows-1903
 - windows-1909
+- windows-2004
