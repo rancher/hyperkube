@@ -166,8 +166,8 @@ clone:
 steps:
   - name: clone
     image: luthermonson/drone-git:windows-2004-amd64
-  - name: luthermonson/drone-docker:2004
-    image: plugins/docker
+  - name: publish-hyperkube-windows-2004
+    image: luthermonson/drone-docker:2004
     settings:
       username:
         from_secret: docker_username
