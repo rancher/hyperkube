@@ -1,4 +1,4 @@
-FROM us.gcr.io/k8s-artifacts-prod/hyperkube:v1.17.14
+FROM us.gcr.io/k8s-artifacts-prod/hyperkube:v1.17.15
 RUN sed -i -e 's!\bmain\b!main contrib!g' /etc/apt/sources.list && \
     apt-get update && apt-get upgrade -y && apt-get clean && \
     clean-install apt-transport-https gnupg1 curl zfsutils-linux \
