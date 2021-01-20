@@ -190,13 +190,55 @@ volumes:
   - name: docker_pipe
     host:
       path: \\\\.\\pipe\\docker_engine
+
+---
+kind: pipeline
+name: windows-20H2
+
+platform:
+  os: windows
+  arch: amd64
+  version: 20H2
+
+# remove this and use upstream images when https://github.com/drone/drone-git/pull/25 is merged
+clone:
+  disable: true
+
+steps:
+  - name: clone
+    image: luthermonson/drone-git:windows-20H2-amd64
+  - name: publish-hyperkube-windows-20H2
+    image: luthermonson/drone-docker:20H2
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      dockerfile: Dockerfile.windows.20H2
+      repo: rancher/hyperkube
+      tag: "${DRONE_TAG}-windows-20H2"
+      build_args:
+        - SERVERCORE_VERSION=20H2
+    volumes:
+      - name: docker_pipe
+        path: \\\\.\\pipe\\docker_engine
+    when:
+      instance:
+        - drone-publish.rancher.io
+      event:
+        - tag
+
+volumes:
+  - name: docker_pipe
+    host:
+      path: \\\\.\\pipe\\docker_engine
 ---
 kind: pipeline
 name: manifest
 
 steps:
   - name: push-manifest
-    image: ibuildthecloud/manifest:v1.2.3-patch1
+    image: plugins/manifest
     settings:
       username:
         from_secret: docker_username
@@ -215,3 +257,4 @@ depends_on:
 - windows-1903
 - windows-1909
 - windows-2004
+- windows-20H2
