@@ -10,6 +10,8 @@ K8S_STAGING:=$(shell mktemp -d)
 
 K8S_SERVER_TARBALL=kubernetes-server-linux-$(ARCH).tar.gz
 
+HYPERKUBE_BASE_VERSION = $(shell grep hyperkube-base Dockerfile | awk '{ print $$2 }' )
+
 all: all-push
 
 sub-build-%:
@@ -54,6 +56,9 @@ build: k8s-binaries
 
 push: build
 	docker push ${IMAGE}:${K8S_VERSION}-${TAGEND}-${ARCH} 
+
+check-security:
+	/drone/src/trivy image -s HIGH,CRITICAL --exit-code 1 $(HYPERKUBE_BASE_VERSION) || (echo "trivy found issues $$?"; exit 1)
 
 .PHONY: all build push clean all-build all-push-images all-push push-manifest k8s-binaries
 
