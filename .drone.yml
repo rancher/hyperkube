@@ -9,8 +9,14 @@ steps:
   - name: prepare-amd64-binaries
     image: ubuntu:20.04
     commands:
-    - apt-get -y update && apt-get -y install make curl tar
+    - apt-get -y update && apt-get -y install make curl tar docker.io
+    - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $(pwd)
+    - make check-security
     - make k8s-binaries
+    privileged: true
+    volumes:
+    - name: socket
+      path: /var/run/docker.sock
     when:
       event:
         - tag
@@ -31,6 +37,10 @@ steps:
         - drone-publish.rancher.io
       event:
         - tag
+volumes:
+- name: socket
+  host:
+    path: /var/run/docker.sock
 ---
 kind: pipeline
 name: linux-arm64
@@ -43,8 +53,14 @@ steps:
   - name: prepare-arm64-binaries
     image: ubuntu:20.04
     commands:
-    - apt-get -y update && apt-get -y install make curl tar
+    - apt-get -y update && apt-get -y install make curl tar docker.io
+    - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $(pwd)
+    - make check-security
     - make ARCH=arm64 k8s-binaries
+    privileged: true
+    volumes:
+    - name: socket
+      path: /var/run/docker.sock
     when:
       event:
         - tag
@@ -65,6 +81,11 @@ steps:
         - drone-publish.rancher.io
       event:
         - tag
+
+volumes:
+- name: socket
+  host:
+    path: /var/run/docker.sock
 ---
 kind: pipeline
 name: windows-1809-pr
