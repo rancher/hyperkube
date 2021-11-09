@@ -97,7 +97,7 @@ platform:
 
 steps:
   - name: hyperkube-windows-1809-pr
-    image: rancher/dapper:v0.5.6
+    image: rancher/dapper:v0.5.7
     commands:
       - "docker build -f Dockerfile.windows --build-arg SERVERCORE_VERSION=1809 ."
     volumes:
@@ -149,79 +149,6 @@ volumes:
       path: \\\\.\\pipe\\docker_engine
 ---
 kind: pipeline
-name: windows-2004-pr
-
-platform:
-  os: windows
-  arch: amd64
-  version: 2004
-
-# remove this and use upstream images when https://github.com/drone/drone-git/pull/25 is merged
-clone:
-  disable: true
-
-steps:
-  - name: clone
-    image: rancher/drone-images:git-2004
-  - name: hyperkube-windows-2004-pr
-    image: rancher/dapper:v0.5.6
-    commands:
-      - "docker build -f Dockerfile.windows --build-arg SERVERCORE_VERSION=2004 ."
-    volumes:
-      - name: docker_pipe
-        path: \\\\.\\pipe\\docker_engine
-    when:
-      event:
-        - pull_request
-
-volumes:
-  - name: docker_pipe
-    host:
-      path: \\\\.\\pipe\\docker_engine
----
-kind: pipeline
-name: windows-2004
-
-platform:
-  os: windows
-  arch: amd64
-  version: 2004
-
-# remove this and use upstream images when https://github.com/drone/drone-git/pull/25 is merged
-clone:
-  disable: true
-
-steps:
-  - name: clone
-    image: rancher/drone-images:git-2004
-  - name: publish-hyperkube-windows-2004
-    image: rancher/drone-images:docker-2004
-    settings:
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      dockerfile: Dockerfile.windows
-      repo: rancher/hyperkube
-      tag: "${DRONE_TAG}-windows-2004"
-      build_args:
-        - SERVERCORE_VERSION=2004
-    volumes:
-      - name: docker_pipe
-        path: \\\\.\\pipe\\docker_engine
-    when:
-      instance:
-        - drone-publish.rancher.io
-      event:
-        - tag
-
-volumes:
-  - name: docker_pipe
-    host:
-      path: \\\\.\\pipe\\docker_engine
-
----
-kind: pipeline
 name: windows-20H2-pr
 
 platform:
@@ -237,7 +164,7 @@ steps:
   - name: clone
     image: rancher/drone-images:git-20H2
   - name: hyperkube-windows-20H2-pr
-    image: rancher/dapper:v0.5.6
+    image: rancher/dapper:v0.5.7
     commands:
       - "docker build -f Dockerfile.windows.20H2 --build-arg SERVERCORE_VERSION=20H2 ."
     volumes:
@@ -315,5 +242,4 @@ depends_on:
 - linux-amd64
 - linux-arm64
 - windows-1809
-- windows-2004
 - windows-20H2
