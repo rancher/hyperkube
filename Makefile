@@ -28,11 +28,13 @@ all-push: all-push-images push-manifest
 
 k8s-tars/${K8S_VERSION}/${ARCH}/${K8S_SERVER_TARBALL}:
 	mkdir -p k8s-tars/${K8S_VERSION}/${ARCH}
-	cd k8s-tars/${K8S_VERSION}/${ARCH} && curl -sSLO --retry 5 https://dl.k8s.io/${K8S_VERSION}/${K8S_SERVER_TARBALL}
-
+	cd k8s-tars/${K8S_VERSION}/${ARCH} && curl -sSLO --retry 5 https://dl.k8s.io/${K8S_VERSION}/${K8S_SERVER_TARBALL} \
+	&& curl -sSLO --retry 5 https://github.com/rancher/kubernetes/releases/download/${K8S_VERSION}-rc.1-rancher1/kubelet-${K8S_VERSION}-${ARCH}.tar.gz
+	
 k8s-binaries: k8s-tars/${K8S_VERSION}/${ARCH}/$(K8S_SERVER_TARBALL)
 	mkdir -p ${K8S_STAGING}/k8s-server-untarred
 	tar -xz -C ${K8S_STAGING}/k8s-server-untarred -f "k8s-tars/${K8S_VERSION}/${ARCH}/${K8S_SERVER_TARBALL}"
+	tar -xz -C ${K8S_STAGING}/k8s-server-untarred -f "k8s-tars/${K8S_VERSION}/${ARCH}/kubelet-${K8S_VERSION}-${ARCH}.tar.gz"
 
 	mkdir -p ${K8S_STAGING}/k8s-binaries
 
@@ -41,7 +43,7 @@ k8s-binaries: k8s-tars/${K8S_VERSION}/${ARCH}/$(K8S_SERVER_TARBALL)
 	cp ${K8S_STAGING}/k8s-server-untarred/kubernetes/server/bin/kube-proxy ${K8S_STAGING}/k8s-binaries
 	cp ${K8S_STAGING}/k8s-server-untarred/kubernetes/server/bin/kube-scheduler ${K8S_STAGING}/k8s-binaries
 	cp ${K8S_STAGING}/k8s-server-untarred/kubernetes/server/bin/kubectl ${K8S_STAGING}/k8s-binaries
-	cp ${K8S_STAGING}/k8s-server-untarred/kubernetes/server/bin/kubelet ${K8S_STAGING}/k8s-binaries
+	cp ${K8S_STAGING}/k8s-server-untarred/kubelet ${K8S_STAGING}/k8s-binaries
 	
 	mkdir -p k8s-binaries
 	cp -r ${K8S_STAGING}/k8s-binaries/* k8s-binaries/
