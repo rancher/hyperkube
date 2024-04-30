@@ -1,0 +1,33 @@
+name: Run Fossa Scan
+
+on:
+  push:
+    branches:
+      - "v1.*"
+    tags:
+      - '*'
+
+jobs:
+  fossa:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # needed for the Vault authentication
+    continue-on-error: true
+    steps:
+      - name: Load Secrets from Vault
+        uses: rancher-eio/read-vault-secrets@main
+        with:
+          secrets: |
+            secret/data/github/repo/${{ github.repository }}/fossa/credentials token | FOSSA
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Run FOSSA scan
+        uses: fossas/fossa-action@v1.3.3
+        with:
+          api-key: ${{ env.FOSSA }}
+      - name: Run FOSSA test
+        uses: fossas/fossa-action@v1.3.3
+        with:
+          api-key: ${{ env.FOSSA }}
+          run-tests: true

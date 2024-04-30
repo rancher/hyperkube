@@ -1,0 +1,22 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - "gha-*" # for testing
+  pull_request:
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        arch: [ x64, arm64 ]
+    runs-on: org-${{ github.repository_owner_id }}-{{ matrix.arch }}-k8s
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run tests
+        run: env
+
