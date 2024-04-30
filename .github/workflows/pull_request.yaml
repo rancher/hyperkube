@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         arch: [ x64, arm64 ]
-    runs-on: org-${{ github.repository_owner_id }}-{{ matrix.arch }}-k8s
+    runs-on: org-${{ github.repository_owner_id }}-${{ matrix.arch }}-k8s
     permissions:
       contents: read
     steps:
