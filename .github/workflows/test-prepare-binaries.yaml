@@ -19,8 +19,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Environment Variables
         run: |
-          echo ARCH=${{ matrx.arch }}
-          echo ARCH=${{ matrx.arch }} >> $GITHUB_ENV
+          echo ARCH=${{ matrix.arch }}
+          echo ARCH=${{ matrix.arch }} >> $GITHUB_ENV
           if ${{ env.ref_type }} == "tag"; then
             echo K8S_VERSION=$( echo ${{ env.ref_name }} | tr -s " " | cut -d "-" -f1 )
             echo K8S_VERSION=$( echo ${{ env.ref_name }} | tr -s " " | cut -d "-" -f1 ) >> $GITHUB_ENV
