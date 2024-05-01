@@ -21,9 +21,9 @@ jobs:
         run: |
           echo ARCH=${{ matrix.arch }}
           echo ARCH=${{ matrix.arch }} >> $GITHUB_ENV
-          if ${{ env.ref_type }} == "tag"; then
-            echo K8S_VERSION=$( echo ${{ env.ref_name }} | tr -s " " | cut -d "-" -f1 )
-            echo K8S_VERSION=$( echo ${{ env.ref_name }} | tr -s " " | cut -d "-" -f1 ) >> $GITHUB_ENV
+          if "${{ github.ref_type }}" == "tag"; then
+            echo K8S_VERSION=$( echo ${{ github.ref_name }} | tr -s " " | cut -d "-" -f1 )
+            echo K8S_VERSION=$( echo ${{ github.ref_name }} | tr -s " " | cut -d "-" -f1 ) >> $GITHUB_ENV
           fi
       - name: Prepare binaries
         run: |

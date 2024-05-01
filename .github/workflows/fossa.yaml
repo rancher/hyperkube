@@ -1,11 +1,11 @@
 name: Run Fossa Scan
 
 on:
-  push:
-    branches:
-      - "*"
-    tags:
-      - '*'
+  tags:
+    - '*'
+#  push:
+#    branches:
+#      - "*"
 
 jobs:
   fossa:
