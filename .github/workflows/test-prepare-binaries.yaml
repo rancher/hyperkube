@@ -27,4 +27,4 @@ jobs:
           fi
       - name: Prepare binaries
         run: |
-          make ARCH="${{ env.ARCH }}" K8S_VERSION="${{ env.K8S_VERSION }}" k8s-binaries
+          ARCH="${{ env.ARCH }}" K8S_VERSION="${{ env.K8S_VERSION }}" make k8s-binaries
