@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - '*'
-    branches:
+    branches:  # for testing
       - "gha-*" # for testing
   pull_request:
 

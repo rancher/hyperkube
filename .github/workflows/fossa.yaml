@@ -3,7 +3,7 @@ name: Run Fossa Scan
 on:
   push:
     branches:
-      - "v1.*"
+      - "*"
     tags:
       - '*'
 
@@ -13,7 +13,6 @@ jobs:
     permissions:
       contents: read
       id-token: write # needed for the Vault authentication
-    continue-on-error: true
     steps:
       - name: Load Secrets from Vault
         uses: rancher-eio/read-vault-secrets@main

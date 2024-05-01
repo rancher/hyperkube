@@ -1,0 +1,30 @@
+name: Test Prepare Binaries
+
+on:
+  push:
+    branches:
+      - "gha-*" # for testing
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Environment Variables
+        run: |
+          echo ARCH=${{ matrx.arch }}
+          echo ARCH=${{ matrx.arch }} >> $GITHUB_ENV
+          if ${{ env.ref_type }} == "tag"; then
+            echo K8S_VERSION=$( echo ${{ env.ref_name }} | tr -s " " | cut -d "-" -f1 )
+            echo K8S_VERSION=$( echo ${{ env.ref_name }} | tr -s " " | cut -d "-" -f1 ) >> $GITHUB_ENV
+          fi
+      - name: Prepare binaries
+        run: |
+          make ARCH=${{ env.ARCH }} K8S_VERSION=${{ env.K8S_VERSION }} k8s-binaries
