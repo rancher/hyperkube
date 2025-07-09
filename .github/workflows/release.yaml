@@ -5,9 +5,6 @@ on:
     tags:
       - '*'
 
-env:
-  IMAGE: rancher/rke-extended-life/hyperkube
-
 jobs:
   build-push-images:
     runs-on: ubuntu-latest
@@ -22,10 +19,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Load Secrets from Vault
+        uses: rancher-eio/read-vault-secrets@main
+        with:
+          secrets: |
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials endpoint | REGISTRY_ENDPOINT ;
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD        
       - name: Setup Environment Variables
         run: |
           echo "ARCH=${{ matrix.arch }}" >> "$GITHUB_ENV"
           echo "K8S_VERSION=$( echo ${{ github.ref_name }} | tr -s " " | cut -d "-" -f1 )" >> "$GITHUB_ENV"
+          echo "IMAGE=${REGISTRY_ENDPOINT}/rancher/rke-extended-life/hyperkube" >> "$GITHUB_ENV"
       - name: Prepare binaries
         run: make k8s-binaries
       - name: Docker meta
@@ -39,13 +44,6 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Load Secrets from Vault
-        uses: rancher-eio/read-vault-secrets@main
-        with:
-          secrets: |
-            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials endpoint | REGISTRY_ENDPOINT ;
-            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -91,13 +89,6 @@ jobs:
           merge-multiple: true
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.IMAGE }}
-          flavor: |
-            latest=false
       - name: Load Secrets from Vault
         uses: rancher-eio/read-vault-secrets@main
         with:
@@ -105,6 +96,15 @@ jobs:
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials endpoint | REGISTRY_ENDPOINT ;        
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD
+      - name: Set IMAGE with registry endpoint
+        run: echo "IMAGE=${REGISTRY_ENDPOINT}/rancher/rke-extended-life/hyperkube" >> "$GITHUB_ENV"                   
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          flavor: |
+            latest=false
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
