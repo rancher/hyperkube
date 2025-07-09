@@ -43,7 +43,7 @@ jobs:
         uses: rancher-eio/read-vault-secrets@main
         with:
           secrets: |
-            secret/data/github/repo/${{ github.repository }}/registry-endpoint/credentials token | REGISTRY_ENDPOINT ;
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials endpoint | REGISTRY_ENDPOINT ;
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD
       - name: Login to Docker Hub
@@ -102,7 +102,7 @@ jobs:
         uses: rancher-eio/read-vault-secrets@main
         with:
           secrets: |
-            secret/data/github/repo/${{ github.repository }}/registry-endpoint/credentials token | REGISTRY_ENDPOINT ;          
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials endpoint | REGISTRY_ENDPOINT ;        
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD
       - name: Login to Docker Hub
