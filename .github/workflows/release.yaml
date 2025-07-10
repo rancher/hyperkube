@@ -31,6 +31,8 @@ jobs:
           echo "ARCH=${{ matrix.arch }}" >> "$GITHUB_ENV"
           echo "K8S_VERSION=$( echo ${{ github.ref_name }} | tr -s " " | cut -d "-" -f1 )" >> "$GITHUB_ENV"
           echo "IMAGE=${REGISTRY_ENDPOINT}/rancher/rke-extended-life/hyperkube" >> "$GITHUB_ENV"
+      - name: Logout from Docker registry
+        run: docker logout ${{ env.REGISTRY_ENDPOINT }} || true
       - name: Prepare binaries
         run: make k8s-binaries
       - name: Docker meta
@@ -97,7 +99,9 @@ jobs:
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
             secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD
       - name: Set IMAGE with registry endpoint
-        run: echo "IMAGE=${REGISTRY_ENDPOINT}/rancher/rke-extended-life/hyperkube" >> "$GITHUB_ENV"                   
+        run: echo "IMAGE=${REGISTRY_ENDPOINT}/rancher/rke-extended-life/hyperkube" >> "$GITHUB_ENV"
+      - name: Logout from Docker registry
+        run: docker logout ${{ env.REGISTRY_ENDPOINT }} || true
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
