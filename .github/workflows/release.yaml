@@ -23,9 +23,9 @@ jobs:
         uses: rancher-eio/read-vault-secrets@main
         with:
           secrets: |
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials endpoint | REGISTRY_ENDPOINT ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | REGISTRY_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | REGISTRY_PASSWORD
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials endpoint | REGISTRY_ENDPOINT ;
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD
       - name: Setup Environment Variables
         run: |
           echo "ARCH=${{ matrix.arch }}" >> "$GITHUB_ENV"
@@ -95,9 +95,9 @@ jobs:
         uses: rancher-eio/read-vault-secrets@main
         with:
           secrets: |
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials endpoint | REGISTRY_ENDPOINT ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials username | REGISTRY_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/rancher-prime-registry/credentials password | REGISTRY_PASSWORD
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials endpoint | REGISTRY_ENDPOINT ;
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials username | REGISTRY_USERNAME ;
+            secret/data/github/repo/${{ github.repository }}/prime-registry/rancher/rke-extended-life/credentials password | REGISTRY_PASSWORD
       - name: Set IMAGE with registry endpoint
         run: echo "IMAGE=${REGISTRY_ENDPOINT}/rancher/rke-extended-life/hyperkube" >> "$GITHUB_ENV"
       - name: Logout from Docker registry
