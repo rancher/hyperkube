@@ -5,9 +5,6 @@ on:
     tags:
       - '*'
 
-env:
-  IMAGE: rancher/hyperkube
-
 jobs:
   build-push-images:
     runs-on: ubuntu-latest
@@ -22,10 +19,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Load Secrets from Vault
+        uses: rancher-eio/read-vault-secrets@main
+        with:
+          secrets: |
+            secret/data/github/repo/${{ github.repository }}/stage-registry/rancher/rke-extended-life/credentials endpoint |  STAGE_REGISTRY_ENDPOINT;
+            secret/data/github/repo/${{ github.repository }}/stage-registry/rancher/rke-extended-life/credentials username |  STAGE_REGISTRY_USERNAME;
+            secret/data/github/repo/${{ github.repository }}/stage-registry/rancher/rke-extended-life/credentials password |  STAGE_REGISTRY_PASSWORD;
       - name: Setup Environment Variables
         run: |
           echo "ARCH=${{ matrix.arch }}" >> "$GITHUB_ENV"
           echo "K8S_VERSION=$( echo ${{ github.ref_name }} | tr -s " " | cut -d "-" -f1 )" >> "$GITHUB_ENV"
+          echo "IMAGE=${STAGE_REGISTRY_ENDPOINT}/rke-extended-life/hyperkube" >> "$GITHUB_ENV"
       - name: Prepare binaries
         run: make k8s-binaries
       - name: Docker meta
@@ -39,17 +44,12 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Load Secrets from Vault
-        uses: rancher-eio/read-vault-secrets@main
-        with:
-          secrets: |
-            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials username | DOCKER_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials password | DOCKER_PASSWORD
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ env.DOCKER_PASSWORD }}
+          registry: ${{ env.STAGE_REGISTRY_ENDPOINT }}
+          username: ${{ env.STAGE_REGISTRY_USERNAME }}
+          password: ${{ env.STAGE_REGISTRY_PASSWORD }}
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v5
@@ -89,6 +89,15 @@ jobs:
           merge-multiple: true
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Load Secrets from Vault
+        uses: rancher-eio/read-vault-secrets@main
+        with:
+          secrets: |
+            secret/data/github/repo/${{ github.repository }}/stage-registry/rancher/rke-extended-life/credentials endpoint |  STAGE_REGISTRY_ENDPOINT;
+            secret/data/github/repo/${{ github.repository }}/stage-registry/rancher/rke-extended-life/credentials username |  STAGE_REGISTRY_USERNAME;
+            secret/data/github/repo/${{ github.repository }}/stage-registry/rancher/rke-extended-life/credentials password |  STAGE_REGISTRY_PASSWORD;
+      - name: Set IMAGE with registry endpoint
+        run: echo "IMAGE=${STAGE_REGISTRY_ENDPOINT}/rke-extended-life/hyperkube" >> "$GITHUB_ENV"
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -96,17 +105,12 @@ jobs:
           images: ${{ env.IMAGE }}
           flavor: |
             latest=false
-      - name: Load Secrets from Vault
-        uses: rancher-eio/read-vault-secrets@main
-        with:
-          secrets: |
-            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials username | DOCKER_USERNAME ;
-            secret/data/github/repo/${{ github.repository }}/dockerhub/rancher/credentials password | DOCKER_PASSWORD
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ env.DOCKER_PASSWORD }}
+          registry: ${{ env.STAGE_REGISTRY_ENDPOINT }}
+          username: ${{ env.STAGE_REGISTRY_USERNAME }}
+          password: ${{ env.STAGE_REGISTRY_PASSWORD }}
       - name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
